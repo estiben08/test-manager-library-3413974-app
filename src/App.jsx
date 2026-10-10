@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+﻿import React, { useState } from 'react';
 import { BrowserRouter as Router, Route, Routes, Link, useNavigate, Navigate } from 'react-router-dom';
 import axios from 'axios';
 
@@ -7,7 +7,7 @@ const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000/api/v1';
 axios.interceptors.request.use(config => {
   const token = localStorage.getItem('token');
   if (token) {
-    config.headers.Authorization = `Bearer ${token}`;
+    config.headers.Authorization = Bearer ;
   }
   return config;
 });
@@ -21,7 +21,7 @@ function Login({ setAuth }) {
   const handleLogin = async (e) => {
     e.preventDefault();
     try {
-      const res = await axios.post(`${API_URL}/auth/login`, { username, password });
+      const res = await axios.post(${API_URL}/auth/login, { username, password });
       localStorage.setItem('token', res.data.access_token);
       localStorage.setItem('role', res.data.role);
       setAuth(true);
@@ -47,9 +47,9 @@ function Login({ setAuth }) {
 function Books() {
   const [books, setBooks] = React.useState([]);
   const [categories, setCategories] = React.useState([]);
+  const [q, setQ] = useState('');
   const role = localStorage.getItem('role');
   
-  // New book state
   const [title, setTitle] = useState('');
   const [author, setAuthor] = useState('');
   const [isbn, setIsbn] = useState('');
@@ -57,19 +57,19 @@ function Books() {
   const [totalCopies, setTotalCopies] = useState(1);
   const [message, setMessage] = useState(null);
 
-  const fetchBooks = () => axios.get(`${API_URL}/books`).then(res => setBooks(res.data.items)).catch(console.error);
+  const fetchBooks = () => axios.get(${API_URL}/books, { params: { q } }).then(res => setBooks(res.data.items)).catch(console.error);
 
   React.useEffect(() => {
     fetchBooks();
     if (role === 'admin') {
-      axios.get(`${API_URL}/categories`).then(res => setCategories(res.data)).catch(console.error);
+      axios.get(${API_URL}/categories).then(res => setCategories(res.data)).catch(console.error);
     }
-  }, [role]);
+  }, [role, q]);
 
   const handleCreateBook = async (e) => {
     e.preventDefault();
     try {
-      await axios.post(`${API_URL}/books`, {
+      await axios.post(${API_URL}/books, {
         title, author, isbn, category_id: categoryId, total_copies: parseInt(totalCopies)
       });
       setMessage({ type: 'success', text: 'Libro registrado exitosamente' });
@@ -88,7 +88,7 @@ function Books() {
         <div className="card" style={{marginBottom: '2rem'}}>
           <h3>Registrar Nuevo Libro</h3>
           {message && (
-            <div className={`badge badge-${message.type}`} style={{display: 'block', padding: '1rem', marginBottom: '1rem'}}>
+            <div className={adge badge-} style={{display: 'block', padding: '1rem', marginBottom: '1rem'}}>
               {message.text}
             </div>
           )}
@@ -105,6 +105,16 @@ function Books() {
           </form>
         </div>
       )}
+
+      <div style={{marginBottom: '1.5rem'}}>
+        <input 
+          type="text" 
+          placeholder="Buscar por título o autor..." 
+          value={q} 
+          onChange={e => setQ(e.target.value)}
+          style={{maxWidth: '400px'}}
+        />
+      </div>
 
       <ul>
         {books.map(b => (
@@ -132,7 +142,7 @@ function Members() {
   const [documentNumber, setDocumentNumber] = useState('');
   const [message, setMessage] = useState(null);
   
-  const fetchMembers = () => axios.get(`${API_URL}/members`).then(res => setMembers(res.data.items)).catch(console.error);
+  const fetchMembers = () => axios.get(${API_URL}/members).then(res => setMembers(res.data.items)).catch(console.error);
 
   React.useEffect(() => {
     fetchMembers();
@@ -141,7 +151,7 @@ function Members() {
   const handleCreateMember = async (e) => {
     e.preventDefault();
     try {
-      await axios.post(`${API_URL}/members`, {
+      await axios.post(${API_URL}/members, {
         full_name: fullName,
         document_number: documentNumber
       });
@@ -161,7 +171,7 @@ function Members() {
       <div className="card" style={{marginBottom: '2rem'}}>
         <h3>Registrar Nuevo Socio</h3>
         {message && (
-          <div className={`badge badge-${message.type}`} style={{display: 'block', padding: '1rem', marginBottom: '1rem'}}>
+          <div className={adge badge-} style={{display: 'block', padding: '1rem', marginBottom: '1rem'}}>
             {message.text}
           </div>
         )}
@@ -194,19 +204,23 @@ function Loans() {
   const [selectedMember, setSelectedMember] = React.useState('');
   const [selectedBook, setSelectedBook] = React.useState('');
   const [message, setMessage] = React.useState(null);
+  const [statusFilter, setStatusFilter] = useState('');
 
-  const fetchLoans = () => axios.get(`${API_URL}/loans`).then(res => setLoans(res.data.items)).catch(console.error);
+  const fetchLoans = () => axios.get(${API_URL}/loans, { params: { status: statusFilter } }).then(res => setLoans(res.data.items)).catch(console.error);
   
   React.useEffect(() => {
     fetchLoans();
-    axios.get(`${API_URL}/books`).then(res => setBooks(res.data.items)).catch(console.error);
-    axios.get(`${API_URL}/members`).then(res => setMembers(res.data.items)).catch(console.error);
+  }, [statusFilter]);
+
+  React.useEffect(() => {
+    axios.get(${API_URL}/books).then(res => setBooks(res.data.items)).catch(console.error);
+    axios.get(${API_URL}/members).then(res => setMembers(res.data.items)).catch(console.error);
   }, []);
 
   const handleCreateLoan = async (e) => {
     e.preventDefault();
     try {
-      await axios.post(`${API_URL}/loans`, {
+      await axios.post(${API_URL}/loans, {
         member_id: selectedMember,
         items: [{ book_id: selectedBook }]
       });
@@ -219,7 +233,7 @@ function Loans() {
 
   const handleReturn = async (loanId, itemId) => {
     try {
-      await axios.post(`${API_URL}/loans/${loanId}/items/${itemId}/return`, {});
+      await axios.post(${API_URL}/loans//items//return, {});
       setMessage({ type: 'success', text: 'Libro devuelto con éxito' });
       fetchLoans();
     } catch (err) {
@@ -229,10 +243,18 @@ function Loans() {
 
   return (
     <div>
-      <h2>Préstamos Activos</h2>
+      <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center'}}>
+        <h2>Préstamos Activos</h2>
+        <select value={statusFilter} onChange={e => setStatusFilter(e.target.value)} style={{maxWidth: '200px'}}>
+          <option value="">Todos los préstamos</option>
+          <option value="open">Abiertos</option>
+          <option value="overdue">Vencidos</option>
+          <option value="closed">Cerrados</option>
+        </select>
+      </div>
       
       {message && (
-        <div className={`badge badge-${message.type}`} style={{display: 'block', padding: '1rem', marginBottom: '1.5rem'}}>
+        <div className={adge badge-} style={{display: 'block', padding: '1rem', marginBottom: '1.5rem'}}>
           {message.text}
         </div>
       )}
@@ -262,7 +284,7 @@ function Loans() {
           return (
             <div key={loan.id} className="card" style={{marginBottom: 0}}>
               <div style={{display: 'flex', justifyContent: 'space-between', marginBottom: '1rem'}}>
-                <strong>{memberName}</strong>
+                <strong>{memberName} <span className="badge" style={{marginLeft:'10px'}}>{loan.status}</span></strong>
                 <span style={{color: 'var(--text-muted)'}}>{dateStr}</span>
               </div>
               
@@ -300,6 +322,34 @@ function Loans() {
   );
 }
 
+function Overdue() {
+  const [items, setItems] = React.useState([]);
+
+  React.useEffect(() => {
+    axios.get(${API_URL}/loans/overdue).then(res => setItems(res.data.items)).catch(console.error);
+  }, []);
+
+  return (
+    <div>
+      <h2>Vencidos Globales</h2>
+      <ul>
+        {items.map(item => (
+          <li key={item.item_id} className="item-card">
+            <div>
+              <strong>{item.book_title}</strong>
+              <div style={{color: 'var(--text-muted)', fontSize: '0.9rem'}}>Socio: {item.member_name}</div>
+            </div>
+            <span className="badge badge-danger">
+              {item.days_late} días de retraso
+            </span>
+          </li>
+        ))}
+        {items.length === 0 && <p style={{color: 'var(--text-muted)'}}>No hay libros vencidos.</p>}
+      </ul>
+    </div>
+  );
+}
+
 function Users() {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
@@ -308,7 +358,7 @@ function Users() {
   const handleCreateUser = async (e) => {
     e.preventDefault();
     try {
-      await axios.post(`${API_URL}/users`, { username, password, role: 'librarian' });
+      await axios.post(${API_URL}/users, { username, password, role: 'librarian' });
       setMessage({ type: 'success', text: 'Bibliotecario creado exitosamente' });
       setUsername('');
       setPassword('');
@@ -321,7 +371,7 @@ function Users() {
     <div>
       <h2>Gestión de Usuarios</h2>
       {message && (
-        <div className={`badge badge-${message.type}`} style={{display: 'block', padding: '1rem', marginBottom: '1.5rem'}}>
+        <div className={adge badge-} style={{display: 'block', padding: '1rem', marginBottom: '1.5rem'}}>
           {message.text}
         </div>
       )}
@@ -347,7 +397,7 @@ function Reports() {
   const handleFetchReport = async (e) => {
     e.preventDefault();
     try {
-      const res = await axios.get(`${API_URL}/reports/most-borrowed`, { params: { from, to } });
+      const res = await axios.get(${API_URL}/reports/most-borrowed, { params: { from, to } });
       setRows(res.data.rows);
       setMessage(null);
     } catch (err) {
@@ -362,7 +412,7 @@ function Reports() {
       <div className="card" style={{marginBottom: '2rem'}}>
         <h3>Libros más prestados</h3>
         {message && (
-          <div className={`badge badge-${message.type}`} style={{display: 'block', padding: '1rem', marginBottom: '1rem'}}>
+          <div className={adge badge-} style={{display: 'block', padding: '1rem', marginBottom: '1rem'}}>
             {message.text}
           </div>
         )}
@@ -422,6 +472,7 @@ function App() {
               <Link to="/books">Catálogo</Link>
               <Link to="/members">Socios</Link>
               <Link to="/loans">Préstamos</Link>
+              <Link to="/overdue">Vencidos</Link>
               {role === 'admin' && <Link to="/users">Usuarios</Link>}
               {role === 'admin' && <Link to="/reports">Reportes</Link>}
               
@@ -441,6 +492,7 @@ function App() {
           <Route path="/books" element={auth ? <Books /> : <Navigate to="/" />} />
           <Route path="/members" element={auth ? <Members /> : <Navigate to="/" />} />
           <Route path="/loans" element={auth ? <Loans /> : <Navigate to="/" />} />
+          <Route path="/overdue" element={auth ? <Overdue /> : <Navigate to="/" />} />
           <Route path="/users" element={auth && role === 'admin' ? <Users /> : <Navigate to="/" />} />
           <Route path="/reports" element={auth && role === 'admin' ? <Reports /> : <Navigate to="/" />} />
         </Routes>
